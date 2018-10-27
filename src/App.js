@@ -6,7 +6,7 @@ const REP_DURATION = 4;
 const REST_REP_DURATION = 2;
 const REST_SET_DURATION = 3;
 const REP_PER_SET = 2;
-const SET_TOTAL = 2;
+const SET_TOTAL = 1;
 
 class App extends Component {
   constructor(props) {
@@ -16,17 +16,46 @@ class App extends Component {
       seconds: REP_DURATION,
       intervalId: null,
       rep: 0,
-      set: 0
+      set: 0,
+      isBtnStop: false,
+      btnLabel: "Start",
+      btnClassName: "btn btn-primary mt-3"
     };
     this.countDown = this.countDown.bind(this);
     this.stopCountDown = this.stopCountDown.bind(this);
     this.onStart = this.onStart.bind(this);
+    this.onStop = this.onStop.bind(this);
   }
 
   onStart() {
     this.countDown();
-    if (this.state.status === "Click to start") {
-      this.setState({ status: "ongoing" });
+    this.setState({
+      status: "ongoing",
+      isBtnStop: true,
+      btnLabel: "Stop",
+      btnClassName: "btn btn-danger mt-3"
+    });
+  }
+
+  onStop() {
+    this.stopCountDown();
+    if (this.state.status === "Finished!") {
+      this.setState({
+        status: "Click to start",
+        seconds: REP_DURATION,
+        intervalId: null,
+        rep: 0,
+        set: 0,
+        isBtnStop: false,
+        btnLabel: "Start",
+        btnClassName: "btn btn-primary mt-3"
+      });
+    } else {
+      this.setState({
+        isBtnStop: false,
+        btnLabel: "Resume",
+        btnClassName: "btn btn-primary mt-3 "
+      });
     }
   }
 
@@ -83,7 +112,14 @@ class App extends Component {
             rep = 0;
             if (set === SET_TOTAL) {
               /** enough set, goes to "Finished" */
-              this.setState({ status: "Finished!", set, rep });
+              this.setState({
+                status: "Finished!",
+                set,
+                rep,
+                btnClassName: "btn btn-primary mt-3",
+                btnLabel: "Restart",
+                isBtnStop: false
+              });
               this.stopCountDown();
             } else {
               /** not enough set, goes to "resting between set" */
@@ -118,9 +154,6 @@ class App extends Component {
   }
 
   render() {
-    const className_Start = "btn btn-primary mt-3";
-    const className_ongoing = "btn btn-danger mt-3";
-
     return (
       <div className="App">
         <header className="App-header">
@@ -128,26 +161,20 @@ class App extends Component {
             seconds={this.state.seconds}
             status={this.state.status}
           />
-          <button
-            className={
-              this.state.status === "Click to start"
-                ? className_Start
-                : className_ongoing
-            }
-            style={{ borderRadius: "25px", padding: "11px 40px" }}
-            onClick={
-              this.state.status === "Click to start"
-                ? this.onStart
-                : this.stopCountDown
-            }
-          >
-            {this.state.status === "Click to start" ? "Start" : "Stop"}
-          </button>
           <div>
             rep:
             <span className="label label-primary">{this.state.rep}</span>
           </div>
           <div>set: {this.state.set}</div>
+          <button
+            className={this.state.btnClassName}
+            style={{ borderRadius: "25px", padding: "11px 40px" }}
+            onClick={
+              this.state.isBtnStop === false ? this.onStart : this.onStop
+            }
+          >
+            {this.state.btnLabel}
+          </button>
         </header>
       </div>
     );
