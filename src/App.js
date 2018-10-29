@@ -7,24 +7,30 @@ const REST_REP_DURATION = 2;
 const REST_SET_DURATION = 3;
 const REP_PER_SET = 2;
 const SET_TOTAL = 1;
+const initialState = {
+  status: "Click to start",
+  seconds: REP_DURATION,
+  intervalId: null,
+  rep: 0,
+  set: 0,
+  isBtnStop: false,
+  // btnLabel: "Start" /** UIstate, don't put it here */,
+  btnClassName: "btn btn-primary mt-3" /** UIstate, don't put it here */
+};
+/** status refactor */
+let banner = initialState.status;
+/** button label refactor */
+let btnLabel = "Start";
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      status: "Click to start",
-      seconds: REP_DURATION,
-      intervalId: null,
-      rep: 0,
-      set: 0,
-      isBtnStop: false,
-      btnLabel: "Start",
-      btnClassName: "btn btn-primary mt-3"
-    };
+    this.state = initialState;
     this.countDown = this.countDown.bind(this);
     this.stopCountDown = this.stopCountDown.bind(this);
     this.onStart = this.onStart.bind(this);
     this.onStop = this.onStop.bind(this);
+    this.renderButton = this.renderButton.bind(this);
   }
 
   onStart() {
@@ -32,9 +38,9 @@ class App extends Component {
     this.setState({
       status: "ongoing",
       isBtnStop: true,
-      btnLabel: "Stop",
       btnClassName: "btn btn-danger mt-3"
     });
+    btnLabel = "Stop";
   }
 
   onStop() {
@@ -47,15 +53,15 @@ class App extends Component {
         rep: 0,
         set: 0,
         isBtnStop: false,
-        btnLabel: "Start",
         btnClassName: "btn btn-primary mt-3"
       });
+      btnLabel = "Restart";
     } else {
       this.setState({
         isBtnStop: false,
-        btnLabel: "Resume",
         btnClassName: "btn btn-primary mt-3 "
       });
+      btnLabel = "Resume";
     }
   }
 
@@ -69,7 +75,7 @@ class App extends Component {
 
   stopCountDown() {
     clearInterval(this.state.intervalId);
-    this.setState({ status: "Click to resume" });
+    // this.setState({ status: "Click to resume" });
   }
 
   componentDidUpdate() {
@@ -89,38 +95,22 @@ class App extends Component {
           break;
         case "resting":
           rep = rep + 1;
-          // /** check if rep num is full, if so "rest_bewteen set", if not then "ongiong" */
-          // if (rep === REP_PER_SET) {
-          //   this.setState({
-          //     status: "resting between set",
-          //     seconds: REST_SET_DURATION,
-          //     rep: 0,
-          //     set: this.state.set + 1
-          //   });
-          //   console.log(`BREAK! rep:${this.state.rep}, set: ${this.state.set}`);
-          // } else {
-          //   this.setState({ status: "ongoing", seconds: REP_DURATION });
-          // }
-          // /** check if set num is full, if so "Finished" */
-          // if (this.state.set === SET_TOTAL) {
-          //   this.setState({ status: "Finised !" });
-          //   this.stopCountDown();
-          // }
           if (rep === REP_PER_SET) {
             /** enough reps for one set */
             set += 1;
             rep = 0;
             if (set === SET_TOTAL) {
               /** enough set, goes to "Finished" */
-              this.setState({
-                status: "Finished!",
-                set,
-                rep,
-                btnClassName: "btn btn-primary mt-3",
-                btnLabel: "Restart",
-                isBtnStop: false
-              });
-              this.stopCountDown();
+              this.setState(
+                {
+                  status: "Finished!",
+                  set,
+                  rep,
+                  btnClassName: "btn btn-primary mt-3",
+                  isBtnStop: false
+                },
+                this.onStop
+              );
             } else {
               /** not enough set, goes to "resting between set" */
               this.setState({
@@ -145,12 +135,18 @@ class App extends Component {
           break;
       }
     }
+  }
 
-    // console.log(
-    //   `status: ${this.state.status}; rep: ${this.state.rep}; set: ${
-    //     this.state.set
-    //   }; seconds: ${this.state.seconds}`
-    // );
+  renderButton() {
+    return (
+      <button
+        className={this.state.btnClassName}
+        style={{ borderRadius: "25px", padding: "11px 40px" }}
+        onClick={this.state.isBtnStop === false ? this.onStart : this.onStop}
+      >
+        {btnLabel}
+      </button>
+    );
   }
 
   render() {
@@ -160,21 +156,14 @@ class App extends Component {
           <TimerDisplay
             seconds={this.state.seconds}
             status={this.state.status}
+            banner={banner}
           />
           <div>
             rep:
             <span className="label label-primary">{this.state.rep}</span>
           </div>
           <div>set: {this.state.set}</div>
-          <button
-            className={this.state.btnClassName}
-            style={{ borderRadius: "25px", padding: "11px 40px" }}
-            onClick={
-              this.state.isBtnStop === false ? this.onStart : this.onStop
-            }
-          >
-            {this.state.btnLabel}
-          </button>
+          {this.renderButton()}
         </header>
       </div>
     );
