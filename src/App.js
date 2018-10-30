@@ -1,5 +1,7 @@
+/** timer explained:
+ * ongoing -> rest -> onging -> rest -> rest between set -> onoing
+ */
 import React, { Component } from "react";
-// import logo from "./logo.svg";
 import "./App.css";
 import TimerDisplay from "./components/countdown_timer";
 const REP_DURATION = 4;
@@ -84,9 +86,6 @@ class App extends Component {
     /** check if second===0 */
     if (seconds === 0) {
       switch (status) {
-        default:
-          console.log(`default`);
-          break;
         case "ongoing":
           this.setState({
             status: "resting",
@@ -133,6 +132,8 @@ class App extends Component {
         case "resting between set":
           this.setState({ status: "ongoing", seconds: REP_DURATION });
           break;
+        default:
+          console.log(`default`);
       }
     }
   }
