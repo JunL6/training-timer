@@ -37,8 +37,7 @@ class App extends Component {
     this.countDown();
     this.setState({
       status: "ongoing",
-      isBtnStop: true,
-      btnClassName: "btn btn-danger mt-3"
+      isBtnStop: true
     });
     btnLabel = "Stop";
   }
@@ -52,14 +51,12 @@ class App extends Component {
         intervalId: null,
         rep: 0,
         set: 0,
-        isBtnStop: false,
-        btnClassName: "btn btn-primary mt-3"
+        isBtnStop: false
       });
       btnLabel = "Restart";
     } else {
       this.setState({
-        isBtnStop: false,
-        btnClassName: "btn btn-primary mt-3 "
+        isBtnStop: false
       });
       btnLabel = "Resume";
     }
@@ -106,7 +103,6 @@ class App extends Component {
                   status: "Finished!",
                   set,
                   rep,
-                  btnClassName: "btn btn-primary mt-3",
                   isBtnStop: false
                 },
                 this.onStop
@@ -138,10 +134,10 @@ class App extends Component {
   }
 
   renderButton() {
+    const { status, isBtnStop } = this.state;
     return (
       <button
-        className={this.state.btnClassName}
-        style={{ borderRadius: "25px", padding: "11px 40px" }}
+        className={ "btn mt-3 root-button " + ((status === 'ongoing' && isBtnStop) ? 'btn-danger' : 'btn-primary')}
         onClick={this.state.isBtnStop === false ? this.onStart : this.onStop}
       >
         {btnLabel}

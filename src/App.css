@@ -31,3 +31,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+.root-button { 
+  border-radius: 25px;
+  padding: 11px 40px;
+ }
