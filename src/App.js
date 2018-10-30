@@ -20,6 +20,9 @@ const initialState = {
   btnClassName: "btn btn-primary mt-3" /** UIstate, don't put it here */
 };
 /** status refactor */
+/**
+ * how
+ */
 let banner = initialState.status;
 /** button label refactor */
 let btnLabel = "Start";
@@ -138,7 +141,10 @@ class App extends Component {
     const { status, isBtnStop } = this.state;
     return (
       <button
-        className={ "btn mt-3 root-button " + ((status === 'ongoing' && isBtnStop) ? 'btn-danger' : 'btn-primary')}
+        className={
+          "btn mt-3 root-button " +
+          (status === "ongoing" && isBtnStop ? "btn-danger" : "btn-primary")
+        }
         onClick={this.state.isBtnStop === false ? this.onStart : this.onStop}
       >
         {btnLabel}
