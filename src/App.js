@@ -19,6 +19,12 @@ const initialState = {
   // btnLabel: "Start" /** UIstate, don't put it here */,
   btnClassName: "btn btn-primary mt-3" /** UIstate, don't put it here */
 };
+const status = {
+  clickToStart: "Click to Start",
+  ongoing: "ongoing",
+  resting: "resting",
+  restSet: "rest between set"
+};
 /** status refactor */
 /**
  * how
@@ -82,6 +88,7 @@ class App extends Component {
 
   componentDidUpdate() {
     let { status, seconds, set, rep } = this.state;
+    let newState = {};
 
     /** check if second===0 */
     if (seconds === 0) {
